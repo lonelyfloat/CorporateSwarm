@@ -12,9 +12,10 @@
         - Puzzle/resource management.
         - Challenges: level system & design
         - 1 room puzzles?
-    - Maybe you're trying to AVOID tiny creatures?
+    - Maybe you're trying to AVOID tiny creatures? **
         - still REALLY want boid-like swarms
         - Maybe now it's a stealth game and you traverse a top-down geometric landscape trying to avoid swarms
+        - Level-based stealth game
 
 # Things to focus on:
 - musical dynamic (strength)
@@ -31,7 +32,4 @@
 
 
 # Goals of 10/4/24: 
-    - Get main mechanic in, when I decide it
-    - Boid simulation
-    - Finalize ideation of gameplay loop (ideally implement it)
-    - Start on music/sound
+    - Start on music/sound (Not done)

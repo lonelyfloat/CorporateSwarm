@@ -14,10 +14,17 @@ const int screenHeight = 720;
 Texture2D guyTexture;
 BoidData boidData;
 
+Vector2 playerPos;
+Vector2 playerVelo;
+const float playerRadius = 20;
+const float playerSpeed = 250;
+
 void UpdateDrawFrame(void);     
 
 int main(void)
 {
+    playerPos = (Vector2){screenWidth/2.0, screenHeight/2.0};
+    playerVelo = Vector2Zero();
     InitWindow(screenWidth, screenHeight, "ld56");
     guyTexture = LoadTexture("assets/guy.png");
     boidData = InitBoidData(256);
@@ -59,6 +66,12 @@ void UpdateDrawFrame(void)
 {
     // Update
     //----------------------------------------------------------------------------------
+    Vector2 lastFrameVelo = playerVelo;
+    if(IsMouseButtonDown(MOUSE_BUTTON_LEFT))
+        playerVelo = Vector2Scale(Vector2Normalize(Vector2Subtract(GetMousePosition(), playerPos)), playerSpeed * GetFrameTime());
+    else playerVelo = Vector2Zero();
+    playerVelo = Vector2Lerp(lastFrameVelo, playerVelo, 0.3);
+    playerPos = Vector2Add(playerPos, playerVelo);
     UpdateBoids(&boidData, Vector2Zero(), false, NULL);
     //----------------------------------------------------------------------------------
 
@@ -68,5 +81,6 @@ void UpdateDrawFrame(void)
 
         ClearBackground(RAYWHITE);
         DrawBoids(&boidData, guyTexture);
+        DrawCircleV(playerPos, playerRadius, GREEN);
     EndDrawing();
 }

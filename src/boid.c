@@ -78,9 +78,7 @@ void UpdateBoids(BoidData* b, Vector2 playerPos, bool boidState, Level* l)
         b->boidVelocities[i] = Vector2Scale(b->boidVelocities[i], b->boidSpeed * GetFrameTime());
         if(Vector2LengthSqr(b->boidVelocities[i]) > (b->boidMaxSpeed*b->boidMaxSpeed) * GetFrameTime()) 
             b->boidVelocities[i] = Vector2Scale(Vector2Normalize(b->boidVelocities[i]), b->boidMaxSpeed * GetFrameTime()); 
-        float lerpf = 0.2; // lerp value for linear interpolation of velocity (below):
-        b->boidVelocities[i].x = lastFrameVelo.x * (1.0 - lerpf) + (b->boidVelocities[i].x * lerpf);
-        b->boidVelocities[i].y = lastFrameVelo.y * (1.0 - lerpf) + (b->boidVelocities[i].y * lerpf);
+        b->boidVelocities[i] = Vector2Lerp(lastFrameVelo, b->boidVelocities[i], 0.2);
         b->boidPositions[i] = Vector2Add(b->boidPositions[i], b->boidVelocities[i]);
     }
 }

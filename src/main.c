@@ -6,8 +6,8 @@
     #include <emscripten/emscripten.h>
 #endif
 
-const int screenWidth = 800;
-const int screenHeight = 450;
+const int screenWidth = 1280;
+const int screenHeight = 720;
 #define BOID_MAX 256
 
 Vector2 boidPositions[BOID_MAX] = {};
@@ -15,19 +15,22 @@ Vector2 boidVelocities[BOID_MAX] = {};
 float boidMaxSpeed = 200.0;
 float boidSpeed = 1.8;
 float cohesionRadius = 100;
-float cohesionFactor = 0.001;
+float cohesionFactor = 0.01;
 float separationRadius = 30;
 float separationFactor = 5;
 float alignmentRadius = 100;
 float alignmentFactor = 1.0/6;
 float boidRadius = 10;
-int boidCount = 20;
+int boidCount = 30;
+
+Texture2D guyTexture;
 
 void UpdateDrawFrame(void);     
 
 int main(void)
 {
     InitWindow(screenWidth, screenHeight, "ld56");
+    guyTexture = LoadTexture("assets/guy.png");
     for(int i = 0; i < boidCount; ++i) 
     {
         boidPositions[i] = (Vector2){GetRandomValue(0, screenWidth), GetRandomValue(0, screenHeight)};
@@ -45,6 +48,7 @@ int main(void)
     }
 #endif
 
+    UnloadTexture(guyTexture);
     CloseWindow();        
 
     return 0;
@@ -58,6 +62,7 @@ void UpdateDrawFrame(void)
     // Update boids
     for(int i = 0; i < boidCount; ++i)
     {
+        Vector2 lastFrameVelo = boidVelocities[i];
         // Rule 1: Cohesion
 
         Vector2 positionsSum = Vector2Zero();
@@ -76,7 +81,7 @@ void UpdateDrawFrame(void)
         boidVelocities[i] = Vector2Scale(Vector2Subtract(centerOfMass, boidPositions[i]), cohesionFactor);
 
         // Move towards mouse cursor 
-        boidVelocities[i] = Vector2Add(boidVelocities[i], Vector2Scale(Vector2Subtract(GetMousePosition(), boidPositions[i]), 0.4));
+        boidVelocities[i] = Vector2Add(boidVelocities[i], Vector2Scale(Vector2Subtract(GetMousePosition(), boidPositions[i]), 0.3));
 
         // Rule 2: Separation
         Vector2 dir = Vector2Zero();
@@ -108,6 +113,9 @@ void UpdateDrawFrame(void)
         boidVelocities[i] = Vector2Scale(boidVelocities[i], boidSpeed * GetFrameTime());
         if(Vector2LengthSqr(boidVelocities[i]) > (boidMaxSpeed*boidMaxSpeed) * GetFrameTime()) 
             boidVelocities[i] = Vector2Scale(Vector2Normalize(boidVelocities[i]), boidMaxSpeed * GetFrameTime()); 
+        float lerpf = 0.5; // lerp value for linear interpolation of velocity (below):
+        boidVelocities[i].x = lastFrameVelo.x * (1.0 - lerpf) + (boidVelocities[i].x * lerpf);
+        boidVelocities[i].y = lastFrameVelo.y * (1.0 - lerpf) + (boidVelocities[i].y * lerpf);
         boidPositions[i] = Vector2Add(boidPositions[i], boidVelocities[i]);
     }
     //----------------------------------------------------------------------------------
@@ -121,7 +129,9 @@ void UpdateDrawFrame(void)
         DrawText("Congrats! You created your first window!", 190, 200, 20, LIGHTGRAY);
         for(int i = 0; i < boidCount; ++i)
         { 
-            DrawCircleV(boidPositions[i], boidRadius, RED);
+            DrawTexturePro(guyTexture, (Rectangle){0,0,guyTexture.width, guyTexture.height}, 
+                    (Rectangle){boidPositions[i].x, boidPositions[i].y, guyTexture.width, guyTexture.height},
+                    (Vector2){guyTexture.width/2., guyTexture.height/2.}, 30*sinf((GetTime() + i) * 8), WHITE);
         }
     EndDrawing();
 }

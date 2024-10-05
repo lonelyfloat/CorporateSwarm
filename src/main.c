@@ -18,6 +18,7 @@ Vector2 playerPos;
 Vector2 playerVelo;
 const float playerRadius = 20;
 const float playerSpeed = 250;
+Level level1;
 
 void UpdateDrawFrame(void);     
 
@@ -38,11 +39,28 @@ int main(void)
     boidData.alignmentFactor = 1.0/6;
     boidData.boidRadius = 10;
     boidData.boidCount = 30;
-    for(int i = 0; i < boidData.boidCount; ++i) 
-    {
-        boidData.boidPositions[i] = (Vector2){GetRandomValue(0, screenWidth), GetRandomValue(0, screenHeight)};
-        boidData.boidVelocities[i] = Vector2Zero();
-    }
+    boidData.boidViewTolerance = 0.85;
+    boidData.boidForgetTime = 0.5;
+    boidData.boidObstacleFactor = 1.0;
+    boidData.boidObstacleRadius = 30;
+    boidData.boidConeWidth = 120;
+    boidData.boidSuspicion = 2;
+    boidData.suspicionRadius = 100;
+
+    level1 = InitLevel(
+                (Rectangle[]){
+                (Rectangle){100,100, 300, 200},
+                (Rectangle){500,100, 300, 200}
+                },
+                2,
+                (BoidSpawnCluster[]){(BoidSpawnCluster){30, (Vector2){100, 600}}},
+                1,
+                (Vector2){screenWidth/2.0, screenHeight/2.0},
+                Vector2Zero()
+            );
+    LoadLevel(&boidData, &level1);
+
+
 
     #if defined(__EMSCRIPTEN__)
         emscripten_set_main_loop(UpdateDrawFrame, 0, 1);
@@ -56,6 +74,7 @@ int main(void)
 #endif
 
     FreeBoidData(&boidData);
+    FreeLevel(&level1);
     UnloadTexture(guyTexture);
     CloseWindow();        
 
@@ -72,7 +91,7 @@ void UpdateDrawFrame(void)
     else playerVelo = Vector2Zero();
     playerVelo = Vector2Lerp(lastFrameVelo, playerVelo, 0.3);
     playerPos = Vector2Add(playerPos, playerVelo);
-    UpdateBoids(&boidData, Vector2Zero(), false, NULL);
+    UpdateBoids(&boidData, playerPos, &level1);
     //----------------------------------------------------------------------------------
 
     // Draw
@@ -81,6 +100,7 @@ void UpdateDrawFrame(void)
 
         ClearBackground(RAYWHITE);
         DrawBoids(&boidData, guyTexture);
+        DrawLevel(&level1);
         DrawCircleV(playerPos, playerRadius, GREEN);
     EndDrawing();
 }

@@ -30,6 +30,18 @@
 - *Anything* that a game engine can do easily but will take a looooong time here
     - Tiled level systems, advanced animators, bone animation, 3D
 
+# Level system prototype format:
+goalX, goalY
+startX, startY
+hitboxCount
+hitbox1x, hitbox1y
+... (continue)
+boidSpawnersCount, totalBoids
+spawner1x, spawner1y, count
+... (continue)
 
-# Goals of 10/4/24: 
-    - Start on music/sound (Not done)
+# Goals of 10/5/25:
+    - Finish level system
+    - Player art, background art
+    - Do as much w/ music & sound as I can
+    - Start levels

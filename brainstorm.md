@@ -1,47 +1,37 @@
-# Possible themes: 
-
-Reflection
-Absorb
-    - agar.io inspired game?
-You are not supposed to be here
-    - sneaking in / stealth game?
-    - game about feeling unwanted
-Playing with fire
-Tiny creatures
+### Theme: Tiny creatures
     - simulation type thing?
     - controlling many little characters swarming around mouse
-Under pressure
-    - water? 
-    - time crunch?
-Mutation
-    - makes me think of cellular automata, etc. type stuff
-Side effects
-Salvage
-Shelter
-    - shelter from what?
-    - are you the shelter, or do you seek shelter
-Isolation
-Pathways
-Descend
-Lost signal
-Connections
-Strange machines
-    - literally a celeste B-side quote
-    - robots?
-Ruins
-    - player RUINING something
-    - physical ruins (obvious)
-Break the cycle
-    - game where there is a literally moving cycle that must be interrupted (simulation type thing?)
-    - redirecting water flows (puzzle game)
+    - maybe do boids? STAR
+    - Mouse controls, for simplicity
 
+# Idea dump:
+    - combat game where tons of little tiny creatures fight against bigger creatures
+        - levels would be harder to defeat enemies
+        - Flaw: designing complex creatures is NOT my strength.
+    - Game where little creatures have to all navigate within some limited space
+        - Puzzle/resource management.
+        - Challenges: level system & design
+        - 1 room puzzles?
+    - Maybe you're trying to AVOID tiny creatures?
+        - still REALLY want boid-like swarms
+        - Maybe now it's a stealth game and you traverse a top-down geometric landscape trying to avoid swarms
 
 # Things to focus on:
-- musical moments
+- musical dynamic (strength)
 - more code complexity (algorithms, etc.)
 - SIMPLE art
+- polish ONE thing to the EXTREME.
+- For once, make a menu that isn't ASS.
 
 # Things to avoid:
 - ANYTHING REQUIRING DRAWN ANIMATION (WILL NOT TURN OUT WELL)
+- COMPLEX ART
 - *Anything* that a game engine can do easily but will take a looooong time here
     - Tiled level systems, advanced animators, bone animation, 3D
+
+
+# Goals of 10/4/24: 
+    - Get main mechanic in, when I decide it
+    - Boid simulation
+    - Finalize ideation of gameplay loop (ideally implement it)
+    - Start on music/sound

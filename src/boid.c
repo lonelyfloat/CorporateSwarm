@@ -36,7 +36,9 @@ void LoadLevel(BoidData* b, Level* l)
     int clusterIdx = 0;
     for(int i = 0; i < b->boidCount; ++i)
     {
+        b->boidStates[i] = BOID_IDLE;
         b->boidPositions[i] = l->spawnClusters[currentCluster].position;
+        b->boidVelocities[i] = Vector2Scale(Vector2Normalize((Vector2){GetRandomValue(-1, 1), GetRandomValue(-1,1)}), b->boidMaxSpeed/30.0);
         clusterIdx++;
         if(clusterIdx >= l->spawnClusters[currentCluster].amount) 
         {

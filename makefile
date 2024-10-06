@@ -14,4 +14,4 @@ all:
 	gcc $(FILES_FULL) -o game -Os -Wall -Iinclude -Llib -lraylib -lopengl32 -lgdi32 -lwinmm
 
 web: 
-	emcc -o game.html $(FILES_FULL) lib/web/libraylib.a -Os -Wall -Iinclude -Llib/web -s USE_GLFW=3  -DPLATFORM_WEB --shell-file lib/web/template.html
+	emcc -o game.html $(FILES_FULL) lib/web/libraylib.a -Os -Wall -Iinclude -Llib/web -s USE_GLFW=3  -DPLATFORM_WEB --shell-file lib/web/template.html --preload-file assets

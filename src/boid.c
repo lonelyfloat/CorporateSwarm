@@ -71,7 +71,25 @@ void UpdateBoids(BoidData* b, Vector2 playerPos, Level* l)
         else centerOfMass = b->boidPositions[i]; 
         b->boidVelocities[i] = Vector2Scale(Vector2Subtract(centerOfMass, b->boidPositions[i]), b->cohesionFactor);
 
-        if(b->boidStates[i] != BOID_IDLE ) b->boidVelocities[i] = Vector2Add(b->boidVelocities[i], Vector2Scale(Vector2Subtract(playerPos, b->boidPositions[i]), 0.3));
+        float attractForce = 0.3;
+        if(b->boidStates[i] != BOID_IDLE ) b->boidVelocities[i] = Vector2Add(b->boidVelocities[i], Vector2Scale(Vector2Subtract(playerPos, b->boidPositions[i]), attractForce));
+
+        // Avoid endPos and startPos of level
+        Vector2 repel = Vector2Zero();
+        b->boidVelocities[i] = Vector2Add(b->boidVelocities[i], Vector2Scale(repel, b->separationFactor));
+
+        // dw about these hard coded numbers its just radiuses of the sprites that start there
+        float repelForce = 3;
+        if(CheckCollisionCircles(b->boidPositions[i], b->boidObjRadius, l->endPos, 51))
+        {
+            b->boidVelocities[i] = Vector2Add(b->boidVelocities[i], Vector2Scale(Vector2Subtract(b->boidPositions[i], l->endPos), repelForce));
+        }
+
+        if(CheckCollisionCircles(b->boidPositions[i], b->boidObjRadius, l->startPos, 15))
+        {
+            b->boidVelocities[i] = Vector2Add(b->boidVelocities[i], Vector2Scale(Vector2Subtract(b->boidPositions[i], l->startPos), repelForce));
+        }
+
 
         // Obstacle avoidance (aboidance)
         for(int k = -b->boidConeWidth/2; k < b->boidConeWidth/2; ++k)
@@ -123,6 +141,8 @@ void UpdateBoids(BoidData* b, Vector2 playerPos, Level* l)
                 }
             }
         }
+
+
 
         // Rule 2: Separation
         Vector2 dir = Vector2Zero();

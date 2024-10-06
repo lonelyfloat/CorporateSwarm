@@ -18,7 +18,7 @@ typedef struct Level {
 } Level;
 
 Level InitLevel(Rectangle hitboxes[], int hitboxCount, BoidSpawnCluster clusters[], int clusterCount, Vector2 startPos, Vector2 endPos);
-void DrawLevel(Level* level);
+void DrawLevel(Level* level, Texture2D marbleTex);
 void FreeLevel(Level* l);
 
 #endif

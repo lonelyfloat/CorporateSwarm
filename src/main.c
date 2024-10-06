@@ -1,6 +1,8 @@
 #include "raylib.h"
 #include "boid.h"
 #include <raymath.h>
+#include <stdio.h>
+#include <stdlib.h>
 
 #if defined(__EMSCRIPTEN__)
     #include <emscripten/emscripten.h>
@@ -9,14 +11,27 @@
 const int screenWidth = 1280;
 const int screenHeight = 720;
 
+typedef enum GameState
+{
+    GAME_MENU,
+    GAME_DIED,
+    GAME_PLAYING,
+    GAME_WON
+} GameState;
 Texture2D guyTexture;
 BoidData boidData;
 
+Texture2D playerTex;
 Vector2 playerPos;
 Vector2 playerVelo;
+
 const float playerRadius = 20;
 const float playerSpeed = 250;
-Level level1;
+
+const int levelCount = 1;
+Level *levels;
+int currentLevel;
+Texture2D marbleTex;
 
 void UpdateDrawFrame(void);     
 
@@ -26,6 +41,9 @@ int main(void)
     playerVelo = Vector2Zero();
     InitWindow(screenWidth, screenHeight, "ld56");
     guyTexture = LoadTexture("assets/guy.png");
+    playerTex = LoadTexture("assets/player.png");
+    marbleTex = LoadTexture("assets/marble.png");
+
     boidData = InitBoidData(256);
     boidData.boidMaxSpeed = 200.0;
     boidData.boidSpeed = 1.8;
@@ -44,19 +62,22 @@ int main(void)
     boidData.boidConeWidth = 120;
     boidData.boidSuspicion = 2;
     boidData.suspicionRadius = 100;
+    boidData.boidObjRadius = 50;
 
-    level1 = InitLevel(
+    levels = malloc(sizeof(Level) * levelCount);
+    levels[0] = InitLevel(
                 (Rectangle[]){
                 (Rectangle){100,100, 300, 200},
                 (Rectangle){500,100, 300, 200}
                 },
-                2,
+                3,
                 (BoidSpawnCluster[]){(BoidSpawnCluster){30, (Vector2){100, 600}}},
                 1,
                 (Vector2){screenWidth/2.0, screenHeight/2.0},
-                Vector2Zero()
+                (Vector2){800,400}
             );
-    LoadLevel(&boidData, &level1);
+    currentLevel = 0;
+    LoadLevel(&boidData, &levels[currentLevel]);
 
 
 
@@ -72,8 +93,14 @@ int main(void)
 #endif
 
     FreeBoidData(&boidData);
-    FreeLevel(&level1);
+    for(int i = 0; i < levelCount; ++i)
+    {
+        FreeLevel(&levels[i]);
+    }
     UnloadTexture(guyTexture);
+    UnloadTexture(playerTex);
+    UnloadTexture(marbleTex);
+    free(levels);
     CloseWindow();        
 
     return 0;
@@ -83,13 +110,35 @@ void UpdateDrawFrame(void)
 {
     // Update
     //----------------------------------------------------------------------------------
+    // TODO: Menus, sounds, b-section of music, levels, finish level state machine type stuff (the big switch)
     Vector2 lastFrameVelo = playerVelo;
     if(IsMouseButtonDown(MOUSE_BUTTON_LEFT))
         playerVelo = Vector2Scale(Vector2Normalize(Vector2Subtract(GetMousePosition(), playerPos)), playerSpeed * GetFrameTime());
     else playerVelo = Vector2Zero();
     playerVelo = Vector2Lerp(lastFrameVelo, playerVelo, 0.3);
+
+    bool collidingwHitbox = false;
+    for(int i = 0; i < levels[currentLevel].hitboxCount; ++i)
+    {
+        if(CheckCollisionCircleRec(Vector2Add(playerPos, Vector2Scale(playerVelo, 3)), playerRadius, levels[currentLevel].hitboxes[i]))
+        {
+            playerPos = Vector2Add(playerPos, Vector2Negate(playerVelo));
+            collidingwHitbox = true;
+            break;
+        }
+    }
+    //if(collidingwHitbox) playerVelo = Vector2Zero();
     playerPos = Vector2Add(playerPos, playerVelo);
-    UpdateBoids(&boidData, playerPos, &level1);
+    UpdateBoids(&boidData, playerPos, &levels[currentLevel]);
+    bool playerBoidCollision = false;
+    for(int i = 0; i < boidData.boidCount; ++i)
+    {
+        if(CheckCollisionCircles(playerPos, playerRadius, boidData.boidPositions[i], boidData.boidRadius))
+        {
+            playerBoidCollision = true;
+            break;
+        }
+    }
     //----------------------------------------------------------------------------------
 
     // Draw
@@ -98,7 +147,9 @@ void UpdateDrawFrame(void)
 
         ClearBackground(RAYWHITE);
         DrawBoids(&boidData, guyTexture);
-        DrawLevel(&level1);
-        DrawCircleV(playerPos, playerRadius, GREEN);
+        DrawLevel(&levels[currentLevel], marbleTex);
+        DrawTexturePro(playerTex, (Rectangle){0,0,playerTex.width,playerTex.height}, 
+            (Rectangle){playerPos.x, playerPos.y, playerTex.width, playerTex.height},
+            (Vector2){playerTex.width/2.0, playerTex.height/2.0}, 30*sinf(10*GetTime()), WHITE);
     EndDrawing();
 }

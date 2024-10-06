@@ -33,6 +33,7 @@ typedef struct BoidData {
     float boidObstacleRadius;
     float suspicionRadius;
     int boidSuspicion;
+    float boidObjRadius;
 } BoidData;
 
 BoidData InitBoidData(int maxBoids);

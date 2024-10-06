@@ -167,7 +167,6 @@ void UpdateBoids(BoidData* b, Vector2 playerPos, Level* l)
                        CheckCollisionLines(b->boidPositions[i],playerPos,(Vector2){r.x, r.y},(Vector2){r.x, r.y + r.height}, NULL)||
                        CheckCollisionLines(b->boidPositions[i],playerPos,(Vector2){r.x + r.width, r.y},(Vector2){r.x + r.width, r.y + r.height}, NULL)||
                        CheckCollisionLines(b->boidPositions[i],playerPos,(Vector2){r.x, r.y + r.height},(Vector2){r.x + r.width, r.y + r.height}, NULL);
-            if(i==0 && h == 0)printf("%d: %s\n", i, obscured ? "true" : "false");
         }
 
         if(!obscured)

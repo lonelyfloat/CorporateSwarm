@@ -1,8 +1,6 @@
 #include "raylib.h"
 #include "boid.h"
 #include <raymath.h>
-#include <stdio.h>
-#include <string.h>
 
 #if defined(__EMSCRIPTEN__)
     #include <emscripten/emscripten.h>
@@ -40,7 +38,7 @@ int main(void)
     boidData.boidRadius = 10;
     boidData.boidCount = 30;
     boidData.boidViewTolerance = 0.85;
-    boidData.boidForgetTime = 0.5;
+    boidData.boidForgetTime = 2.0;
     boidData.boidObstacleFactor = 1.0;
     boidData.boidObstacleRadius = 30;
     boidData.boidConeWidth = 120;

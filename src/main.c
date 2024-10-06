@@ -1,5 +1,6 @@
 #include "raylib.h"
 #include "boid.h"
+#include <math.h>
 #include <raymath.h>
 #include <stdio.h>
 #include <stdlib.h>
@@ -43,9 +44,8 @@ Sound playerWalk;
 Sound deathSound;
 
 
+Music music;
 
-float bwTimer = 0.0;
-float pwTimer = 0.0;
 
 void UpdateDrawFrame(void);     
 
@@ -152,8 +152,9 @@ int main(void)
     SetSoundVolume(playerWalk, 1.0);
     SetSoundVolume(boidWalk, 1.0);
 
+    music = LoadMusicStream("assets/maintheme.wav");
 
-
+    PlayMusicStream(music);
 
     #if defined(__EMSCRIPTEN__)
         emscripten_set_main_loop(UpdateDrawFrame, 0, 1);
@@ -176,6 +177,7 @@ int main(void)
     UnloadTexture(marbleTex);
     UnloadSound(boidWalk);
     free(levels);
+    UnloadMusicStream(music);
     CloseAudioDevice();
     CloseWindow();        
 
@@ -184,14 +186,14 @@ int main(void)
 
 void UpdateDrawFrame(void)
 {
+
+    UpdateMusicStream(music);
     switch(currentState) 
     {
     case GAME_PLAYING:
     // Update
     //----------------------------------------------------------------------------------
     // TODO: b-section of music, adaptive music stuff
-    bwTimer += GetFrameTime();
-    pwTimer += GetFrameTime();
     lastFrameVelo = playerVelo;
     if(IsMouseButtonDown(MOUSE_BUTTON_LEFT))
         playerVelo = Vector2Scale(Vector2Normalize(Vector2Subtract(GetMousePosition(), playerPos)), playerSpeed * GetFrameTime());
@@ -217,7 +219,6 @@ void UpdateDrawFrame(void)
 
     if(!IsSoundPlaying(boidWalk)) 
     {
-        printf("%f,walk sound\n", GetTime());
         PlaySound(boidWalk);
     }
     for(int i = 0; i < boidData.boidCount; ++i)
@@ -233,7 +234,6 @@ void UpdateDrawFrame(void)
         }
     }
 
-    printf("%d\n", soundCount);
     SetSoundVolume(boidWalk, sqrtf(sqrt(soundCount/(float)boidData.boidCount)));
 
 
@@ -255,7 +255,9 @@ void UpdateDrawFrame(void)
     {
         currentLevel++;
         if(currentLevel >= levelCount)
+        {
             currentState = GAME_WON;
+        }
         else 
         {
             LoadLevel(&boidData, &levels[currentLevel]);
@@ -265,7 +267,9 @@ void UpdateDrawFrame(void)
     break;
     case GAME_MENU: 
     if(IsMouseButtonPressed(MOUSE_BUTTON_LEFT))
+    {
         currentState = GAME_PLAYING;
+    }
     //----------------------------------------------------------------------------------
 
     // Draw
@@ -283,6 +287,7 @@ void UpdateDrawFrame(void)
     if(IsSoundPlaying(boidWalk)) StopSound(boidWalk);
     if(IsMouseButtonPressed(MOUSE_BUTTON_LEFT))
     {
+
         currentLevel = 0;
         LoadLevel(&boidData, &levels[currentLevel]);
         playerPos = levels[currentLevel].startPos;
